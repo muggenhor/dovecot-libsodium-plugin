@@ -31,15 +31,29 @@
 #include "libsodium-plugin.h"
 
 #ifdef crypto_pwhash_scryptsalsa208sha256_STRPREFIX
+# ifndef crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MIN
+#  define crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MIN 32768U
+# endif
+# ifndef crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MAX
+#  define crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MAX 4294967295U
+# endif
 static void scrypt_generate(const char *plaintext, const char *user ATTR_UNUSED,
                    const unsigned char **raw_password_r, size_t *size_r)
 {
         char *password;
 
+	unsigned long long rounds = password_scheme_encryption_rounds;
+	if (rounds == 0)
+		rounds = crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE;
+	else if (rounds < crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MIN)
+		rounds = crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MIN;
+	else if (rounds > crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MAX)
+		rounds = crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MAX;
+
         password = t_malloc(crypto_pwhash_scryptsalsa208sha256_STRBYTES);
         if (crypto_pwhash_scryptsalsa208sha256_str
                 (password, plaintext, strlen(plaintext),
-                 crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE,
+                 rounds,
                  crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE) != 0) {
                 abort();
         }
@@ -61,15 +75,29 @@ static int scrypt_verify(const char *plaintext, const char *user ATTR_UNUSED,
 #endif
 
 #ifdef crypto_pwhash_STRPREFIX
+# ifndef crypto_pwhash_argon2i_OPSLIMIT_MIN
+#  define crypto_pwhash_argon2i_OPSLIMIT_MIN 3U
+# endif
+# ifndef crypto_pwhash_argon2i_OPSLIMIT_MAX
+#  define crypto_pwhash_argon2i_OPSLIMIT_MAX 4294967295U
+# endif
 static void argon2_generate(const char *plaintext, const char *user ATTR_UNUSED,
                    const unsigned char **raw_password_r, size_t *size_r)
 {
         char *password;
 
+	unsigned long long rounds = password_scheme_encryption_rounds;
+	if (rounds == 0)
+		rounds = crypto_pwhash_argon2i_OPSLIMIT_INTERACTIVE;
+	else if (rounds < crypto_pwhash_argon2i_OPSLIMIT_MIN)
+		rounds = crypto_pwhash_argon2i_OPSLIMIT_MIN;
+	else if (rounds > crypto_pwhash_argon2i_OPSLIMIT_MAX)
+		rounds = crypto_pwhash_argon2i_OPSLIMIT_MAX;
+
         password = t_malloc(crypto_pwhash_scryptsalsa208sha256_STRBYTES);
         if (crypto_pwhash_str
                 (password, plaintext, strlen(plaintext),
-                 crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                 rounds,
                  crypto_pwhash_MEMLIMIT_INTERACTIVE) != 0) {
                 abort();
         }
