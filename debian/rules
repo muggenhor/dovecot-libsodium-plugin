@@ -1,0 +1,16 @@
+#!/usr/bin/make -f
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
+
+# hardening options at build time
+export DEB_BUILD_HARDENING=1
+
+# Regenerate build system
+DEB_AUTO_UPDATE_LIBTOOL        := pre
+DEB_AUTO_UPDATE_ACLOCAL        := ,
+DEB_AUTO_UPDATE_AUTOMAKE       := $(DEB_AUTO_UPDATE_ACLOCAL)
+DEB_AUTO_UPDATE_AUTOCONF       := 2.56
+DEB_AUTO_UPDATE_AUTOHEADER     := $(DEB_AUTO_UPDATE_AUTOCONF)
+DEB_AUTOMAKE_ARGS              := --add-missing
+DEB_DH_SHLIBDEPS_ARGS_ALL      := -l /usr/lib/dovecot

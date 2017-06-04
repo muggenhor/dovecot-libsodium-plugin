@@ -1,4 +1,4 @@
-auth_moduledir = $(moduledir)/auth
+auth_moduledir = $(dovecot_moduledir)/auth
 
 AM_CPPFLAGS = \
 	$(LIBDOVECOT_INCLUDE)

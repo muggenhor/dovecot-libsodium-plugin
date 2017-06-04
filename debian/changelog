@@ -1,0 +1,5 @@
+dovecot-plugin-libsodium (0.1-0) unstable; urgency=low
+
+  * First release.
+
+ -- Giel van Schijndel <me@mortis.eu>  Sun, 04 Jun 2016 23:14:14 +0200
